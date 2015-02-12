@@ -41,7 +41,7 @@
 
 (defgroup nanowrimo nil
   "nanowrimo minor-mode"
-  :group 'comm)
+  :group 'editing)
 
 (defcustom nanowrimo-api-token "username:hexstring"
   "Your NaNoWriMo API token that can be found at: https://nanowrimo.org/api/wordcount"
@@ -75,12 +75,21 @@
 					 (secure-hash 'SHA-1 (format t "~a~a~a" nanowrimo-username nanowrimo-api-token wc)))
 			(message "Please define nanowrimo username and api token.")))
 
-(defun word-count () 
+(defun nanowrimo-word-count () 
 	"Count words in buffer" 
 	(interactive)
 	(shell-command-on-region 
 	 (point-min) 
 	 (point-max) 
 	 "wc -w"))
+
+(defun nanowrimo-post-word-count ()
+	"Posts the buffers current word count to Nanowrimo API."
+	(let ((nanowrimo-api-url "http://nanowrimo.org/api/wordcount")
+				(nanowrimo-wc 0)
+				(nanowrimo-hash ""))
+		(setq nanowrimo-wc (nanowrimo-word-count))
+		(setq nanowrimo-hash (nanowrimo-hash(wc)))
+		(url-retrieve-synchronously (format t "~a/~a" nanowrimo-api-url nanowrimo-api-url nanowrimo-hash))))
 
 (provide 'nanowrimo)
