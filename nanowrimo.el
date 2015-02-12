@@ -50,7 +50,25 @@
 
 (defcustom nanowrimo-username ""
   "Your NaNoWriMo Username"
+ Issues 3
+ Pull Requests
   :group 'nanowrimo
   :type 'string)
+
+(defvar nanowrimo-mode nil
+  "mode for posting word-counts")
+(make-variable-buffer-local 'nanowrimo-mode)
+
+(defun nanowrimo-mode (&optional arg)
+  "Nanowrimo minor mode"
+  (interactive "P")
+  (setq nanowrimo-mode
+        (if (null arg)
+            (not nanowrimo-mode)
+          (> (prefix-numeric-value arg) 0)))
+  (if nanowrimo-mode
+      (add-hook 'after-change-functions 'nanowrimo)
+    (remove-hook 'after-change-functions 'nanowrimo)))
+
 
 (provide 'nanowrimo)
