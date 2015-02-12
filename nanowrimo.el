@@ -50,13 +50,12 @@
 
 (defcustom nanowrimo-username ""
   "Your NaNoWriMo Username"
- Issues 3
- Pull Requests
   :group 'nanowrimo
   :type 'string)
 
 (defvar nanowrimo-mode nil
-  "mode for posting word-counts")
+  "Mode for posting word-counts to Nanowrimo website.")
+
 (make-variable-buffer-local 'nanowrimo-mode)
 
 (defun nanowrimo-mode (&optional arg)
@@ -70,5 +69,18 @@
       (add-hook 'after-change-functions 'nanowrimo)
     (remove-hook 'after-change-functions 'nanowrimo)))
 
+(defun nanowrimo-hash (wc)
+	"Creates the SHA-1 hash of username, api-token, wc for posting to the nanowrimo api"
+	(if (and (boundp 'nanowrimo-username) (boundp 'nanowrimo-api-token)
+					 (secure-hash 'SHA-1 (format t "~a~a~a" nanowrimo-username nanowrimo-api-token wc)))
+			(message "Please define nanowrimo username and api token.")))
+
+(defun word-count () 
+	"Count words in buffer" 
+	(interactive)
+	(shell-command-on-region 
+	 (point-min) 
+	 (point-max) 
+	 "wc -w"))
 
 (provide 'nanowrimo)
